@@ -42,6 +42,16 @@ namespace BLL.Services
             return await bookRepository.GetAll();
         }
 
+        public async Task<List<Book>> GetAvailableBooks()
+        {
+            return await bookRepository.Search(b => b.State == BookState.Available);
+        }
+
+        public async Task<List<Book>> GetBorrowedBooks()
+        {
+            return await bookRepository.Search(b => b.State == BookState.Borrowed);
+        }
+
         public async Task<bool> RentBook(int bookId)
         {
             var book = await bookRepository.GetById(bookId);

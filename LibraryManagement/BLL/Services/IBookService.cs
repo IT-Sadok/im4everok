@@ -11,5 +11,7 @@ namespace BLL.Services
         public Task<List<Book>> GetAll();
         public Task<bool> RentBook(int bookId);
         public Task<bool> ReturnBook(int bookId);
+        public Task<List<Book>> GetAvailableBooks();
+        public Task<List<Book>> GetBorrowedBooks();
     }
 }

@@ -168,9 +168,7 @@ namespace LibraryManagement
         {
             Console.WriteLine("\n=== Rent Book ===");
 
-            // Show available books first
-            List<Book> allBooks = await bookService.GetAll();
-            List<Book> availableBooks = allBooks.Where(b => b.State == BookState.Available).ToList();
+            List<Book> availableBooks = await bookService.GetAvailableBooks();
 
             if (availableBooks.Count == 0)
             {
@@ -201,8 +199,7 @@ namespace LibraryManagement
             Console.WriteLine("\n=== Return Book ===");
 
             // Show borrowed books first
-            List<Book> allBooks = await bookService.GetAll();
-            List<Book> borrowedBooks = allBooks.Where(b => b.State == BookState.Borrowed).ToList();
+            List<Book> borrowedBooks = await bookService.GetBorrowedBooks();
 
             if (borrowedBooks.Count == 0)
             {
