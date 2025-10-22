@@ -1,5 +1,6 @@
-﻿using DAL.DTO;
-using DAL.Models;
+﻿using BLL.DTOs;
+
+using DAL.DTO;
 
 namespace BLL.Services
 {
@@ -7,11 +8,11 @@ namespace BLL.Services
     {
         public Task<int> AddBook(AddBookRequest addBookRequest);
         public Task<bool> DeleteBook(int bookId);
-        public Task<List<Book>> SearchByAuthorOrName(string searchTerm);
-        public Task<List<Book>> GetAll();
+        public Task<List<BookResponse>> SearchByAuthorOrName(string searchTerm);
+        public Task<List<BookResponse>> GetAll();
         public Task<bool> RentBook(int bookId);
         public Task<bool> ReturnBook(int bookId);
-        public Task<List<Book>> GetAvailableBooks();
-        public Task<List<Book>> GetBorrowedBooks();
+        public Task<List<BookResponse>> GetAvailableBooks();
+        public Task<List<BookResponse>> GetBorrowedBooks();
     }
 }

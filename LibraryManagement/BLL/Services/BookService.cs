@@ -1,4 +1,5 @@
-﻿using BLL.Validators;
+﻿using BLL.DTOs;
+using BLL.Validators;
 
 using DAL.DTO;
 using DAL.Enums;
@@ -20,6 +21,7 @@ namespace BLL.Services
                 Name = book.Name,
                 Author = book.Author,
                 YearOfPublish = book.YearOfPublish,
+                State = BookState.Available
             };
 
             return await bookRepository.Add(bookEntity);
@@ -32,29 +34,32 @@ namespace BLL.Services
             return await bookRepository.Delete(bookId);
         }
 
-        public async Task<List<Book>> GetAll()
+        public async Task<List<BookResponse>> GetAll()
         {
-            return await bookRepository.GetAll();
+            var books = await bookRepository.GetAll();
+            return books.Select(MapToResponse).ToList();
         }
 
-        public async Task<List<Book>> GetAvailableBooks()
+        public async Task<List<BookResponse>> GetAvailableBooks()
         {
-            return await bookRepository.Search(b => b.State == BookState.Available);
+            var books = await bookRepository.Search(b => b.State == BookState.Available);
+            return books.Select(MapToResponse).ToList();
         }
 
-        public async Task<List<Book>> GetBorrowedBooks()
+        public async Task<List<BookResponse>> GetBorrowedBooks()
         {
-            return await bookRepository.Search(b => b.State == BookState.Borrowed);
+            var books = await bookRepository.Search(b => b.State == BookState.Borrowed);
+            return books.Select(MapToResponse).ToList();
         }
 
         public async Task<bool> RentBook(int bookId)
         {
             var book = await bookRepository.GetById(bookId);
 
-            if(book is null) 
+            if (book is null)
                 throw new ArgumentException("Book not found.");
 
-            if(book.State == BookState.Borrowed) 
+            if (book.State == BookState.Borrowed)
                 throw new InvalidOperationException("Book is already rented.");
 
             book.State = BookState.Borrowed;
@@ -68,18 +73,34 @@ namespace BLL.Services
             if (book is null)
                 throw new ArgumentException("Book not found.");
 
-            if (book.State == BookState.Available) 
+            if (book.State == BookState.Available)
                 throw new InvalidOperationException("Book is not rented.");
 
             book.State = BookState.Available;
             return await bookRepository.Update(book);
         }
 
-        public async Task<List<Book>> SearchByAuthorOrName(string searchTerm)
+        public async Task<List<BookResponse>> SearchByAuthorOrName(string searchTerm)
         {
-            return await bookRepository.Search(b => 
-                b.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || 
+            var books = await bookRepository.Search(b =>
+                b.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 b.Author.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
+            return books.Select(MapToResponse).ToList();
+        }
+
+        // Private mapping method
+        private static BookResponse MapToResponse(Book book)
+        {
+            return new BookResponse
+            {
+                Id = book.Id,
+                Name = book.Name,
+                Author = book.Author,
+                YearOfPublish = book.YearOfPublish,
+                Status = book.State.ToString(),
+                IsAvailable = book.State == BookState.Available
+            };
         }
     }
 }

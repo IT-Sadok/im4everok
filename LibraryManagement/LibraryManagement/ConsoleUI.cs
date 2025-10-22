@@ -1,8 +1,7 @@
-﻿using BLL.Services;
+﻿using BLL.DTOs;
+using BLL.Services;
 
 using DAL.DTO;
-using DAL.Enums;
-using DAL.Models;
 
 namespace LibraryManagement
 {
@@ -136,7 +135,7 @@ namespace LibraryManagement
                 return;
             }
 
-            List<Book> books = await bookService.SearchByAuthorOrName(searchTerm);
+            List<BookResponse> books = await bookService.SearchByAuthorOrName(searchTerm);
 
             if (books.Count == 0)
             {
@@ -152,7 +151,7 @@ namespace LibraryManagement
         {
             Console.WriteLine("\n=== All Books ===");
 
-            List<Book> books = await bookService.GetAll();
+            List<BookResponse> books = await bookService.GetAll();
 
             if (books.Count == 0)
             {
@@ -168,7 +167,7 @@ namespace LibraryManagement
         {
             Console.WriteLine("\n=== Rent Book ===");
 
-            List<Book> availableBooks = await bookService.GetAvailableBooks();
+            List<BookResponse> availableBooks = await bookService.GetAvailableBooks();
 
             if (availableBooks.Count == 0)
             {
@@ -198,8 +197,7 @@ namespace LibraryManagement
         {
             Console.WriteLine("\n=== Return Book ===");
 
-            // Show borrowed books first
-            List<Book> borrowedBooks = await bookService.GetBorrowedBooks();
+            List<BookResponse> borrowedBooks = await bookService.GetBorrowedBooks();
 
             if (borrowedBooks.Count == 0)
             {
@@ -225,7 +223,7 @@ namespace LibraryManagement
                 Console.WriteLine($"\n✅ Book with ID {bookId} returned successfully.");
         }
 
-        private void DisplayBooks(List<Book> books)
+        private void DisplayBooks(List<BookResponse> books)
         {
             Console.WriteLine("\n" + new string('-', 100));
             Console.WriteLine($"{"ID",-5} | {"Title",-30} | {"Author",-25} | {"Year",-6} | {"Status",-10}");
@@ -233,10 +231,9 @@ namespace LibraryManagement
 
             foreach (var book in books)
             {
-                string status = book.State.ToString();
-                string statusIcon = book.State == BookState.Available ? "✓" : "✗";
+                string statusIcon = book.IsAvailable ? "✓" : "✗";
 
-                Console.WriteLine($"{book.Id,-5} | {TruncateString(book.Name, 30),-30} | {TruncateString(book.Author, 25),-25} | {book.YearOfPublish,-6} | {statusIcon} {status,-8}");
+                Console.WriteLine($"{book.Id,-5} | {TruncateString(book.Name, 30),-30} | {TruncateString(book.Author, 25),-25} | {book.YearOfPublish,-6} | {statusIcon} {book.Status,-8}");
             }
 
             Console.WriteLine(new string('-', 100));
