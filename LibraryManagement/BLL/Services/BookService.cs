@@ -7,18 +7,13 @@ using DAL.Repositories.Interfaces;
 
 namespace BLL.Services
 {
-    public class BookService(IBookRepository bookRepository) : IBookService
+    // can also make bookValidator a collection -
+    // so we could reuse validations in many places but i dont see a point in this rn
+    public class BookService(IBookRepository bookRepository, IBookValidator bookValidator) : IBookService
     {
         public async Task<int> AddBook(AddBookRequest book)
         {
-            // thought something like chain of responsibility pattern could be used here for validation,
-            // but im too lazy for that
-            bool isValid = book.IsValidAuthorName() 
-                && book.IsValidBookName() 
-                && book.IsValidYearOfPublish();
-
-            if (!isValid)
-                throw new ArgumentException("Invalid book data.");
+            bookValidator.ValidateAddedBook(book);
 
             Book bookEntity = new()
             {

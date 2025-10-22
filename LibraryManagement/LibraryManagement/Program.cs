@@ -1,4 +1,5 @@
 ﻿using BLL.Services;
+using BLL.Validators;
 
 using DAL.Database;
 using DAL.Models;
@@ -9,7 +10,8 @@ using LibraryManagement;
 
 IDatabase<Book> database = new JsonDatabase("database.json");
 IBookRepository bookRepository = new BookRepository(database);
-IBookService bookService = new BookService(bookRepository);
+IBookValidator addedBookValidator = new AddedBookValidator();
+IBookService bookService = new BookService(bookRepository, addedBookValidator);
 
 var consoleUI = new ConsoleUI(bookService);
 await consoleUI.Run();
