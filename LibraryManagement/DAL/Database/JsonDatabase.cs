@@ -7,6 +7,7 @@ namespace DAL.Database
     public class JsonDatabase(string fileName) : IDatabase<Book>
     {
         private readonly string _fullPath = Path.Combine(AppContext.BaseDirectory, fileName);
+        private readonly SemaphoreSlim semaphoreSlim = new(1);
 
         private async Task CreateJsonDbIfNotExists()
         {
@@ -18,11 +19,12 @@ namespace DAL.Database
 
         public async Task<List<Book>> GetAll()
         {
-            await CreateJsonDbIfNotExists();
-
-            using var stream = File.OpenRead(_fullPath);
             try
             {
+                await semaphoreSlim.WaitAsync();
+                await CreateJsonDbIfNotExists();
+
+                using var stream = File.OpenRead(_fullPath);
 
                 List<Book>? books = await JsonSerializer.DeserializeAsync<List<Book>>(stream);
                 return books ?? [];
@@ -32,14 +34,18 @@ namespace DAL.Database
                 // If the JSON is invalid, return an empty list
                 return [];
             }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
         }
 
         public async Task<bool> SaveData(List<Book> data)
         {
-            await CreateJsonDbIfNotExists();
-
             try
             {
+                await semaphoreSlim.WaitAsync();
+                await CreateJsonDbIfNotExists();
 
                 string serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions()
                 {
@@ -53,6 +59,10 @@ namespace DAL.Database
             catch (Exception)
             {
                 return false;
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
         }
     }
