@@ -7,21 +7,25 @@ namespace DAL.Database
     public class JsonDatabase(string fileName) : IDatabase<Book>
     {
         private readonly string _fullPath = Path.Combine(AppContext.BaseDirectory, fileName);
-        private readonly SemaphoreSlim semaphoreSlim = new(1);
-
+        private readonly SemaphoreSlim _semaphoreSlim = new(1);
+        private bool _isInitialized = false;
         private async Task CreateJsonDbIfNotExists()
         {
+            if (_isInitialized) return;
+
             if (!File.Exists(_fullPath))
             {
                 await File.WriteAllTextAsync(_fullPath, "[]");
             }
+
+            _isInitialized = true;
         }
 
         public async Task<List<Book>> GetAll()
         {
             try
             {
-                await semaphoreSlim.WaitAsync();
+                await _semaphoreSlim.WaitAsync();
                 await CreateJsonDbIfNotExists();
 
                 using var stream = File.OpenRead(_fullPath);
@@ -36,7 +40,7 @@ namespace DAL.Database
             }
             finally
             {
-                semaphoreSlim.Release();
+                _semaphoreSlim.Release();
             }
         }
 
@@ -44,7 +48,7 @@ namespace DAL.Database
         {
             try
             {
-                await semaphoreSlim.WaitAsync();
+                await _semaphoreSlim.WaitAsync();
                 await CreateJsonDbIfNotExists();
 
                 string serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions()
@@ -62,7 +66,7 @@ namespace DAL.Database
             }
             finally
             {
-                semaphoreSlim.Release();
+                _semaphoreSlim.Release();
             }
         }
     }
