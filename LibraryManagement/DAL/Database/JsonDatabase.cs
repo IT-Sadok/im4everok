@@ -9,6 +9,12 @@ namespace DAL.Database
         private readonly string _fullPath = Path.Combine(AppContext.BaseDirectory, fileName);
         private readonly SemaphoreSlim _semaphoreSlim = new(1);
         private bool _isInitialized = false;
+
+        private static readonly JsonSerializerOptions serialerOptions = new ()
+        {
+            WriteIndented = true
+        };
+
         private async Task CreateJsonDbIfNotExists()
         {
             if (_isInitialized) return;
@@ -51,10 +57,7 @@ namespace DAL.Database
                 await _semaphoreSlim.WaitAsync();
                 await CreateJsonDbIfNotExists();
 
-                string serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions()
-                {
-                    WriteIndented = true
-                });
+                string serializedData = JsonSerializer.Serialize(data, serialerOptions);
 
                 await File.WriteAllTextAsync(_fullPath, serializedData);
 
