@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public class File
+    public class FileEntity
     {
         public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
