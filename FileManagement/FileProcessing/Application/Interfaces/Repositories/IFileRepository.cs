@@ -1,9 +1,8 @@
-﻿
-using Application.Common.DTOs;
+﻿using Application.DTOs;
 
 using Domain.Entities;
 
-namespace Application.Common.Interfaces.Repositories
+namespace Application.Interfaces.Repositories
 {
     public interface IFileRepository
     {
