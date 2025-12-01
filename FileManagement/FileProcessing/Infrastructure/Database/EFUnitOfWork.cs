@@ -1,13 +1,31 @@
-﻿
-using Application.Common.Interfaces;
+﻿using Application.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Database
 {
     internal class EFUnitOfWork(DbContext dbContext) : IUnitOfWork
     {
-        public async Task SaveChanges()
+        private IDbContextTransaction? _transaction;
+
+        public async Task BeginTransactionAsync() => _transaction = await dbContext.Database.BeginTransactionAsync();
+
+        public async Task CommitAsync()
+        {
+            if (_transaction == null) return;
+
+            await _transaction.CommitAsync();
+        }
+
+        public async Task RollbackAsync()
+        {
+            if (_transaction == null) return;
+
+            await _transaction.RollbackAsync();
+        }
+
+        public async Task SaveChangesAsync()
         {
             await dbContext.SaveChangesAsync();
         }
