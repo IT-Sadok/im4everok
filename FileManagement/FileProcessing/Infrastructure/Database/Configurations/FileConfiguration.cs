@@ -9,6 +9,7 @@ namespace Infrastructure.Database.Configurations
     {
         public void Configure(EntityTypeBuilder<FileEntity> builder)
         {
+            builder.ToTable("Files");
             builder.HasKey(f => f.Id);
         }
     }
