@@ -14,6 +14,8 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<FileStorageConfiguration>(configuration.GetSection(FileStorageConfiguration.SectionName));
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetSection("DbConnection").Value,
                 sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)

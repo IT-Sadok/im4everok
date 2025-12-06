@@ -3,23 +3,31 @@ using Application.Interfaces.FileStorage;
 
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.FileStorage
 {
-    internal class FileStorage(IConfiguration config) : IFileStorage
+    internal class AzureFileStorage(IOptions<FileStorageConfiguration> optionsDI) : IFileStorage
     {
+        private FileStorageConfiguration config = optionsDI.Value;
+        public async Task DeleteAsync(string path, string containerName, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(config.ConnectionName)) throw new Exception("Blob storage connection string is not defined");
+
+            BlobContainerClient containerClient = new(config.ConnectionName, containerName);
+            await containerClient.DeleteBlobIfExistsAsync(path, cancellationToken: cancellationToken);
+        }
+
         public async Task UploadAsync(string path, Stream content,
             string containerName,
-            string contentType = null,
+            string contentType,
             CancellationToken cancellationToken = default)
         {
-            string? connectionString = config.GetSection("BlobConnectionString").Value;
+            if (string.IsNullOrEmpty(config.ConnectionName)) throw new Exception("Blob storage connection string is not defined");
 
-            if (string.IsNullOrEmpty(connectionString)) throw new Exception("Blob storage connection string is not defined");
-
-            BlobContainerClient containerClient = new(connectionString, containerName);
+            BlobContainerClient containerClient = new(config.ConnectionName, containerName);
 
             await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
@@ -32,6 +40,18 @@ namespace Infrastructure.FileStorage
             {
                 HttpHeaders = headers,
             }, cancellationToken: cancellationToken);
+        }
+
+        public async Task<string> GetSasUrl(string blobPath, string containerName, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrEmpty(config.ConnectionName)) throw new Exception("Blob storage connection string is not defined");
+
+            BlobContainerClient containerClient = new(config.ConnectionName, containerName);
+            BlobClient blobClient = containerClient.GetBlobClient(blobPath);
+            BlobSasBuilder blobSasBuilder = new(BlobSasPermissions.All, DateTimeOffset.Now.AddMinutes(10));
+
+            Uri sasUrl = blobClient.GenerateSasUri(blobSasBuilder);
+            return sasUrl.AbsoluteUri;
         }
     }
 }
