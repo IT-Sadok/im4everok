@@ -1,7 +1,12 @@
-﻿using Application.Interfaces;
+﻿using Application.Features.Files.Commands.Delete;
+using Application.Features.Files.Commands.Upload;
+using Application.Features.Files.Queries.GetAll;
+using Application.Interfaces;
+using Application.Interfaces.FileStorage;
 using Application.Interfaces.Repositories;
 
 using Infrastructure.Database;
+using Infrastructure.FileStorage;
 using Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +28,12 @@ namespace Infrastructure
 
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IUnitOfWork, EFUnitOfWork>();
+
+            services.AddScoped<IFileStorage, AzureFileStorage>();
+
+            services.AddScoped<UploadFileService>();
+            services.AddScoped<DeleteFileService>();
+            services.AddScoped<GetAllFilesService>();
 
             return services;
         }
