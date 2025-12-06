@@ -14,8 +14,6 @@ namespace Application.Features.Files.Commands.Upload
             {
                 Guid fileId = Guid.NewGuid();
 
-                await fileStorage.UploadAsync(fileId.ToString(), request.Content, "files", request.ContentType, ct);
-
                 var file = new FileEntity
                 {
                     Id = fileId,
@@ -27,6 +25,8 @@ namespace Application.Features.Files.Commands.Upload
 
                 await fileRepository.Add(file);
                 await unitOfWork.SaveChangesAsync();
+
+                await fileStorage.UploadAsync(fileId.ToString(), request.Content, "files", request.ContentType, ct);
 
                 return new UploadFileResponse(fileId.ToString());
             }
