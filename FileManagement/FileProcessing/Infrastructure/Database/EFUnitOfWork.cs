@@ -1,11 +1,10 @@
 ﻿using Application.Interfaces;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Database
 {
-    internal class EFUnitOfWork(DbContext dbContext) : IUnitOfWork
+    internal class EFUnitOfWork(AppDbContext dbContext) : IUnitOfWork
     {
         private IDbContextTransaction? _transaction;
 
