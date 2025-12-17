@@ -1,4 +1,5 @@
-﻿using Application.Features.Files.Commands.Upload;
+﻿using Application.Features.Files.Commands.Delete;
+using Application.Features.Files.Commands.Upload;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +7,8 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FilesController(UploadFileService uploadFileService) : ControllerBase
+    public class FilesController(UploadFileService uploadFileService,
+        DeleteFileService deleteFileService) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> UploadFile([FromForm] IFormFile file)
@@ -17,6 +19,16 @@ namespace API.Controllers
             var response = await uploadFileService.Execute(request, cancellationToken);
 
             return Ok(response);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteFile([FromBody] DeleteFileRequest request)
+        {
+            var cancellationToken = HttpContext.RequestAborted;
+
+            await deleteFileService.Execute(request, cancellationToken);
+
+            return Ok();
         }
     }
 }
