@@ -27,6 +27,7 @@ namespace Infrastructure
             ));
 
             services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IOutboxEventRepository, OutboxEventRepository>();
             services.AddScoped<IUnitOfWork, EFUnitOfWork>();
 
             services.AddScoped<IFileStorage, AzureFileStorage>();
