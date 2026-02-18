@@ -11,8 +11,15 @@ namespace API.Controllers
         DeleteFileService deleteFileService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> UploadFile([FromForm] IFormFile file)
+        public async Task<IActionResult> UploadFile([FromForm] IFormFile file
+            //, [FromHeader(Name = "X-Idempotency-Key")] string requestId
+            )
         {
+            //if (!Guid.TryParse(requestId, out var parsedRequestId))
+            //{
+            //    return BadRequest("Invalid or missing idempotency key.");
+            //}
+
             var cancellationToken = HttpContext.RequestAborted;
 
             var request = new UploadFileRequest(file.Name, file.OpenReadStream(), file.ContentType);
