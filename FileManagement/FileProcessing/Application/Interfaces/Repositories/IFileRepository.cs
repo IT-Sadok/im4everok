@@ -12,5 +12,6 @@ namespace Application.Interfaces.Repositories
         Task<IEnumerable<FileDTO>> GetAllAsync(Expression<Func<FileEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
         Task<FileDTO?> GetByIdAsync(Guid fileId, CancellationToken cancellationToken = default);
         Task<FileDTO?> GetByFileNameAsync(string fileName, CancellationToken cancellationToken = default);
+        Task<bool> UpdateHash(Guid fileId, string hash, CancellationToken cancellationToken = default);
     }
 }

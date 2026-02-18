@@ -8,7 +8,6 @@ using Domain.Entities;
 using Infrastructure.Database;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Repositories
 {
@@ -78,6 +77,18 @@ namespace Infrastructure.Repositories
                     Checksum = file.Checksum
                 })
                 .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<bool> UpdateHash(Guid fileId, string hash, CancellationToken cancellationToken = default)
+        {
+            int updatedRows = await context.Set<FileEntity>()
+                .Where(f => f.Id == fileId)
+                .ExecuteUpdateAsync(setters =>
+                    setters.SetProperty(p => p.Checksum, hash));
+
+            if (updatedRows > 1) throw new Exception($"Set same hash for multiple file records, fileId: {fileId}");
+
+            return updatedRows == 1;
         }
     }
 }
