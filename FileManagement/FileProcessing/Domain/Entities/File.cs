@@ -12,6 +12,6 @@
         public string BlobPath { get; set; } = default!;
 
         public string ContentType { get; set; } = default!;
-        public string Checksum { get; set; } = default!;
+        public string? Checksum { get; set; } = default!;
     }
 }
