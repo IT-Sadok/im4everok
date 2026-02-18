@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.Interfaces;
 using Application.Interfaces.FileStorage;
 using Application.Interfaces.Repositories;
@@ -9,28 +7,16 @@ using Domain.Entities;
 
 namespace Application.Features.Files.Commands.Upload
 {
-    public class UploadFileService(IFileRepository fileRepository, IOutboxEventRepository outboxRepository, IUnitOfWork unitOfWork, IFileStorage fileStorage)
+    public class UploadFileService(IFileRepository fileRepository,
+        IOutboxEventRepository outboxRepository,
+        IUnitOfWork unitOfWork,
+        IFileStorage fileStorage)
     {
-        const string FILE_ADDED_EVENT_NAME = "FileAddedEvent";
-
-        string CalculateMD5(Stream file)
-        {
-            using var md5 = MD5.Create();
-            var hash = md5.ComputeHash(file);
-            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-        }
-
         public async Task<UploadFileResponse> Execute(UploadFileRequest request, CancellationToken ct)
         {
             try
             {
                 Guid fileId = Guid.NewGuid();
-
-                // Calculate checksum
-                var checksum = CalculateMD5(request.Content);
-
-                // CRITICAL: Reset stream position after reading for checksum
-                request.Content.Position = 0;
 
                 var file = new FileEntity
                 {
@@ -41,7 +27,6 @@ namespace Application.Features.Files.Commands.Upload
                     ContentType = request.ContentType,
                     ContainerName = "files",
                     BlobPath = fileId.ToString(),
-                    Checksum = checksum
                 };
 
                 var fileAddedEvent = new FileAddedEvent()
@@ -62,7 +47,7 @@ namespace Application.Features.Files.Commands.Upload
                     Error = null,
                     OccuredOnUtc = DateTime.UtcNow,
                     RetryCount = 0,
-                    Type = FILE_ADDED_EVENT_NAME
+                    Type = Constants.FileAddedEventName
                 };
 
                 await fileRepository.Add(file);
