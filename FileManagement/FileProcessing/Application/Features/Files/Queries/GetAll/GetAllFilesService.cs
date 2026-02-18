@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Repositories;
+﻿using Application.Interfaces.Repositories;
 
 namespace Application.Features.Files.Queries.GetAll
 {
@@ -6,7 +6,7 @@ namespace Application.Features.Files.Queries.GetAll
     {
         public async Task<GetAllFilesResponse> Execute(GetAllFilesRequest request, CancellationToken cancellationToken)
         {
-            var files = await fileRepository.GetAllAsync(cancellationToken);
+            var files = await fileRepository.GetAllAsync(cancellationToken: cancellationToken);
             return new GetAllFilesResponse(files);
         }
     }

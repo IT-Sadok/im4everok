@@ -1,4 +1,4 @@
-﻿using Application.Common.DTOs;
+﻿using Application.DTOs;
 
 namespace Application.Features.Files.Queries.GetAll
 {
