@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task<List<OutboxEvent>> GetUnprocessedEventsAsync(int amount, string? type)
+        public async Task<List<OutboxEvent>> GetUnprocessedEventsAsync(int amount, string? type, CancellationToken ct = default)
         {
             var query = dbContext.Set<OutboxEvent>()
                 .Where(e => e.ProcessedOnUtc == null);
@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
             return await query
                 .Take(amount)
                 .OrderBy(e => e.OccuredOnUtc)
-                .ToListAsync();
+                .ToListAsync(cancellationToken: ct);
         }
 
         public async Task MarkAsFailed(Dictionary<Guid, string> errorsByEventId)
