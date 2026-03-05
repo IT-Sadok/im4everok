@@ -2,11 +2,16 @@
 using Application.Features.Files.Commands.Upload;
 using Application.Features.Files.Queries.GetAll;
 using Application.Interfaces;
+using Application.Interfaces.External;
 using Application.Interfaces.FileStorage;
+using Application.Interfaces.MessageBrokers;
 using Application.Interfaces.Repositories;
 
 using Infrastructure.Database;
+using Infrastructure.External;
 using Infrastructure.FileStorage;
+using Infrastructure.MessageBrokers;
+using Infrastructure.Options;
 using Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +25,8 @@ namespace Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<FileStorageConfiguration>(configuration.GetSection(FileStorageConfiguration.SectionName));
+            services.Configure<FileTextExtractionOptions>(configuration.GetSection(FileTextExtractionOptions.SectionName));
+            services.Configure<AzureServiceBusOptions>(configuration.GetSection(AzureServiceBusOptions.SectionName));
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetSection("DbConnection").Value,
@@ -31,10 +38,13 @@ namespace Infrastructure
             services.AddScoped<IUnitOfWork, EFUnitOfWork>();
 
             services.AddScoped<IFileStorage, AzureFileStorage>();
+            services.AddScoped<IFileTextExtractionService, FileTextExtractionService>();
 
-            services.AddScoped<UploadFileService>();
-            services.AddScoped<DeleteFileService>();
-            services.AddScoped<GetAllFilesService>();
+            services.AddScoped<UploadFileCommand>();
+            services.AddScoped<DeleteFileCommand>();
+            services.AddScoped<GetAllFilesQuery>();
+
+            services.AddScoped<IPublisher, AzureServiceBusPublisher>();
 
             return services;
         }
