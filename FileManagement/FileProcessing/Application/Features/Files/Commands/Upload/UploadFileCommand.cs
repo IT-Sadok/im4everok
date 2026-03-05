@@ -7,7 +7,7 @@ using Domain.Entities;
 
 namespace Application.Features.Files.Commands.Upload
 {
-    public class UploadFileService(IFileRepository fileRepository,
+    public class UploadFileCommand(IFileRepository fileRepository,
         IOutboxEventRepository outboxRepository,
         IUnitOfWork unitOfWork,
         IFileStorage fileStorage)
@@ -47,7 +47,7 @@ namespace Application.Features.Files.Commands.Upload
                     Error = null,
                     OccuredOnUtc = DateTime.UtcNow,
                     RetryCount = 0,
-                    Type = Constants.FileAddedEventName
+                    Type = "FileAddedEvent"
                 };
 
                 await fileRepository.Add(file);

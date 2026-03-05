@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Files.Commands.UpdateHashNonTracking
 {
-    public class UpdateHashNonTrackingService(IFileRepository fileRepository,
-        ILogger<UpdateHashNonTrackingService> logger)
+    public class UpdateHashNonTrackingCommand(IFileRepository fileRepository,
+        ILogger<UpdateHashNonTrackingCommand> logger)
     {
         public async Task<bool> Execute(UpdateHashNonTrackingRequest request, CancellationToken cancellationToken)
         {

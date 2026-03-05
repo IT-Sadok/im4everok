@@ -4,7 +4,7 @@ using Application.Interfaces.Repositories;
 
 namespace Application.Features.Files.Commands.Delete
 {
-    public class DeleteFileService(IFileRepository fileRepository, IFileStorage fileStorage)
+    public class DeleteFileCommand(IFileRepository fileRepository, IFileStorage fileStorage)
     {
         public async Task Execute(DeleteFileRequest request, CancellationToken ct)
         {

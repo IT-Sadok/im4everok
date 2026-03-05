@@ -7,8 +7,8 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FilesController(UploadFileService uploadFileService,
-        DeleteFileService deleteFileService) : ControllerBase
+    public class FilesController(UploadFileCommand uploadFileService,
+        DeleteFileCommand deleteFileService) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> UploadFile([FromForm] IFormFile file

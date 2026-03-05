@@ -2,7 +2,7 @@
 
 namespace Application.Features.Files.Queries.GetAll
 {
-    public class GetAllFilesService(IFileRepository fileRepository)
+    public class GetAllFilesQuery(IFileRepository fileRepository)
     {
         public async Task<GetAllFilesResponse> Execute(GetAllFilesRequest request, CancellationToken cancellationToken)
         {
