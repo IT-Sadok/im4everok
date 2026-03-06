@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  identity-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: identity-db
+    environment:
+      SA_PASSWORD: "HelloMyDatabase123*%"
+      MSSQL_PID: "Developer"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1433"
+    volumes:
+      - identity_data:/var/opt/mssql
+
+  file-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: file-db
+    environment: 
+      SA_PASSWORD: "HelloMyDatabase123*%"
+      MSSQL_PID: "Developer"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1435:1433"
+    volumes:
+      - file_data:/var/opt/mssql
+
+volumes:
+  identity_data:
+  file_data:
+
+#   azurite:
+#     image: mcr.microsoft.com/azure-storage/azurite
+#     container_name: filemanagement-azurite
+#     ports:
+#       - "10000:10000" # Blob service
+#       - "10001:10001" # Queue service
+#       - "10002:10002" # Table service
+#     environment:
+#       AZURITE_BLOB_CORS: "*"
+#       AZURITE_QUEUE_CORS: "*"
+#       AZURITE_TABLE_CORS: "*"
+#     volumes:
+#       - azurite_data:/data
+#     command: >
+#        azurite --loose --location /data --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
+
+  # azurite-init: 
+  #   image: mcr.microsoft.com/azure-cli
+  #   depends_on: 
+  #     - azurite
+  #   entrypoint: /bin/sh
+  #   command:
+  #     - -c
+  #     - | 
+  #       echo 'Waiting for Azurite...'
+  #       for i in $(seq 1 15); do
+  #         if az storage container create \
+  #           --name firstcontainer \
+  #           --account-name devstoreaccount1 \
+  #           --account-key Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OU= \
+  #           --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OU=;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;" \
+  #           --only-show-errors \
+  #           ; then 
+  #             echo "Container created!"
+  #             break
+  #         fi
+  #         echo "Azurite not ready yet, retrying in 2 seconds..."
+  #         sleep 2
+  #       done
+
+# volumes:
+#   azurite_data:
